@@ -1,4 +1,9 @@
-import { createPlayer, getPlayers } from "./api.js";
+import {
+  createPlayer,
+  getPlayers,
+  collectResources,
+  sellResources,
+} from "./api.js";
 
 const playerForm = document.getElementById("playerForm");
 const playerList = document.getElementById("playerList");
@@ -25,3 +30,38 @@ playerForm.addEventListener("submit", async (e) => {
 
 // laad spelers bij het laden van de pagina
 loadPlayers();
+
+const playerSelect = document.getElementById("playerSelect");
+const collectBtn = document.getElementById("collectBtn");
+const sellBtn = document.getElementById("sellBtn");
+
+async function updatePlayerListForSelect() {
+  const players = await getPlayers();
+  playerSelect.innerHTML = "";
+  players.forEach((player) => {
+    const option = document.createElement("option");
+    option.value = player._id;
+    option.textContent = `${player.username} (💰${player.money} | 🪨${player.resources})`;
+    playerSelect.appendChild(option);
+  });
+}
+
+// Charger la liste au démarrage
+updatePlayerListForSelect();
+
+// Actions
+collectBtn.addEventListener("click", async () => {
+  const playerId = playerSelect.value;
+  if (!playerId) return;
+  await collectResources(playerId);
+  await updatePlayerListForSelect();
+  await loadPlayers();
+});
+
+sellBtn.addEventListener("click", async () => {
+  const playerId = playerSelect.value;
+  if (!playerId) return;
+  await sellResources(playerId);
+  await updatePlayerListForSelect();
+  await loadPlayers();
+});
