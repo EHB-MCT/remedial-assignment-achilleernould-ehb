@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Economy Simulator - Jeu</title>
+    <link rel="stylesheet" href="../css/gameStyle.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">💰 Economy Simulator</div>
+        <div class="user-info">
+          <span>👤 <span class="user-name" id="userName">Joueur</span></span>
+          <button class="logout-btn" id="logoutBtn">🚪 Déconnexion</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Dashboard du joueur -->
+      <div class="player-dashboard">
+        <h2 class="dashboard-title">📊 Votre Empire</h2>
+
+        <div id="statusMessage"></div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-icon">💰</span>
+            <div class="stat-value" id="playerMoney">0</div>
+            <div class="stat-label">Argent</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🪨</span>
+            <div class="stat-value" id="playerResources">0</div>
+            <div class="stat-label">Ressources</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🧑‍🌾</span>
+            <div class="stat-value" id="playerWorkers">0</div>
+            <div class="stat-label">Workers</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🧑‍💼</span>
+            <div class="stat-value" id="playerSellers">0</div>
+            <div class="stat-label">Sellers</div>
+          </div>
+        </div>
+
+        <div id="autoStatus" class="auto-status inactive">
+          ⏸️ Automatisation inactive - Recrutez des employés pour commencer !
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions manuelles -->
+      <div class="game-section">
+        <h2 class="section-title">⚡ Actions Rapides</h2>
+        <div class="action-buttons">
+          <button id="collectBtn" class="btn btn-success">
+            <span>⛏️</span>
+            Collecter Ressources (+<span id="collectAmount">1</span>)
+          </button>
+          <button id="sellBtn" class="btn btn-warning">
+            <span>💰</span>
+            Vendre Tout (+<span id="sellAmount">0</span>€)
+          </button>
+        </div>
+      </div>
+
+      <!-- Recrutement -->
+      <div class="game-section">
+        <h2 class="section-title">👷 Recrutement</h2>
+        <div class="action-buttons">
+          <button id="hireWorkerBtn" class="btn btn-primary">
+            <span>🧑‍🌾</span>
+            Recruter Worker (200€)
+          </button>
+          <button id="hireSellerBtn" class="btn btn-primary">
+            <span>🧑‍💼</span>
+            Recruter Seller (200€)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/game.js"></script>
+  </body>
+</html>

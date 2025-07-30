@@ -1,23 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Economy Simulator - Login</title>
+    <link rel="stylesheet" href="css/loginStyle.css" />
   </head>
-  <body>
-    <form id="playerForm">
-      <input type="text" id="username" placeholder="Nom du joueur" required />
-      <button type="submit">Speler aanmaken</button>
-    </form>
+<body>
+    <div class="login-container">
+        <div class="logo">💰💎🏭</div>
+        <h1>Economy Simulator</h1>
+        <p class="subtitle">Construisez votre empire économique !</p>
+        
+        <div id="statusMessage"></div>
 
-    <ul id="playerList"></ul>
+        <!-- Formulaire de connexion -->
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Nom du joueur</label>
+                <input type="text" id="username" class="input-field" placeholder="Entrez votre nom" required>
+            </div>
+            
+            <button type="submit" class="btn" id="loginBtn">
+                <span id="loginText">🚀 Commencer à jouer</span>
+            </button>
+        </form>
 
-    <h2>Game Actions</h2>
-    <select id="playerSelect"></select>
-    <button id="collectBtn">Collect Resources</button>
-    <button id="sellBtn">Sell Resources</button>
+        <div class="game-preview">
+            <div class="preview-title">🎮 Fonctionnalités du jeu :</div>
+            <ul class="preview-features">
+                <li>💰 Collectez et vendez des ressources</li>
+                <li>🧑‍🌾 Recrutez des workers automatiques</li>
+                <li>🧑‍💼 Engagez des vendeurs</li>
+                <li>📈 Regardez votre économie grandir en temps réel</li>
+                <li>⚡ Système d'idle game automatisé</li>
+            </ul>
+        </div>
+    </div>
 
-    <script type="module" src="js/script.js"></script>
-  </body>
+    <script src="js/login.js"></script>
+</body>
+</html>
 </html>
