@@ -1,3 +1,5 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -9,12 +11,13 @@ app.use(express.json());
 const playerRoutes = require("./routes/playerRoute");
 app.use("/api", playerRoutes);
 
-mongoose
-  .connect(
-    "mongodb+srv://achilleernould:Achille123@web2.bggqmql.mongodb.net/economy-simulator?retryWrites=true&w=majority&appName=web2"
-  )
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error(err));
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+mongoose.connection.on("connected", () => {
+  console.log("Connected to MongoDB");
+});
 
 app.get("/", (req, res) => {
   res.send("Economy Simulator Backend Running");
