@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Economy Simulator - Jeu</title>
+    <title>Economy Simulator - Game</title>
     <link rel="stylesheet" href="../css/gameStyle.css" />
   </head>
   <body>
@@ -11,76 +11,75 @@
       <div class="header-content">
         <div class="logo">💰 Economy Simulator</div>
         <div class="user-info">
-          <span>👤 <span class="user-name" id="userName">Joueur</span></span>
-          <button class="logout-btn" id="logoutBtn">🚪 Déconnexion</button>
+          <span>👤 <span class="user-name" id="userName">Speler</span></span>
+          <button class="logout-btn" id="logoutBtn">🚪 Uitloggen</button>
         </div>
       </div>
     </header>
 
     <div class="container">
-      <!-- Dashboard du joueur -->
+      <!-- Dashboard van de speler -->
       <div class="player-dashboard">
-        <h2 class="dashboard-title">📊 Votre Empire</h2>
-
-        <div id="statusMessage"></div>
+        <h2 class="dashboard-title">📊 Jouw Imperium</h2>
 
         <div class="stats-grid">
           <div class="stat-card">
             <span class="stat-icon">💰</span>
             <div class="stat-value" id="playerMoney">0</div>
-            <div class="stat-label">Argent</div>
+            <div class="stat-label">Geld</div>
           </div>
           <div class="stat-card">
             <span class="stat-icon">🪨</span>
             <div class="stat-value" id="playerResources">0</div>
-            <div class="stat-label">Ressources</div>
+            <div class="stat-label">Grondstoffen</div>
           </div>
           <div class="stat-card">
             <span class="stat-icon">🧑‍🌾</span>
             <div class="stat-value" id="playerWorkers">0</div>
-            <div class="stat-label">Workers</div>
+            <div class="stat-label">Werkers</div>
           </div>
           <div class="stat-card">
             <span class="stat-icon">🧑‍💼</span>
             <div class="stat-value" id="playerSellers">0</div>
-            <div class="stat-label">Sellers</div>
+            <div class="stat-label">Verkopers</div>
           </div>
         </div>
 
         <div id="autoStatus" class="auto-status inactive">
-          ⏸️ Automatisation inactive - Recrutez des employés pour commencer !
+          ⏸️ Automatisering inactief - Werf personeel aan om te beginnen!
           <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
           </div>
         </div>
+        <div id="statusMessage"></div>
       </div>
 
-      <!-- Actions manuelles -->
+      <!-- manuele acties -->
       <div class="game-section">
-        <h2 class="section-title">⚡ Actions Rapides</h2>
+        <h2 class="section-title">⚡ Snelle Actie</h2>
         <div class="action-buttons">
           <button id="collectBtn" class="btn btn-success">
             <span>⛏️</span>
-            Collecter Ressources (+<span id="collectAmount">1</span>)
+            Grondstoffen verzamelen (+<span id="collectAmount">1</span>)
           </button>
           <button id="sellBtn" class="btn btn-warning">
             <span>💰</span>
-            Vendre Tout (+<span id="sellAmount">0</span>€)
+            Alles verkopen (+<span id="sellAmount">0</span>€)
           </button>
         </div>
       </div>
 
-      <!-- Recrutement -->
+      <!-- Werving -->
       <div class="game-section">
-        <h2 class="section-title">👷 Recrutement</h2>
+        <h2 class="section-title">👷 Werving</h2>
         <div class="action-buttons">
           <button id="hireWorkerBtn" class="btn btn-primary">
             <span>🧑‍🌾</span>
-            Recruter Worker (200€)
+            Werker aanwerven (200€)
           </button>
           <button id="hireSellerBtn" class="btn btn-primary">
             <span>🧑‍💼</span>
-            Recruter Seller (200€)
+            Verkoper aanwerven (200€)
           </button>
         </div>
       </div>

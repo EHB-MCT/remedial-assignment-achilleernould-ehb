@@ -1,12 +1,12 @@
 const BASE_URL = "http://localhost:3000/api";
 
-// Variables globales
+// Variablen
 let currentPlayer = null;
 let autoTickInterval = null;
 let tickProgress = 0;
 const TICK_INTERVAL = 2000; // 2 secondes
 
-// Éléments DOM
+// DOM
 const userName = document.getElementById("userName");
 const playerMoney = document.getElementById("playerMoney");
 const playerResources = document.getElementById("playerResources");
@@ -25,7 +25,7 @@ const sellBtn = document.getElementById("sellBtn");
 const hireWorkerBtn = document.getElementById("hireWorkerBtn");
 const hireSellerBtn = document.getElementById("hireSellerBtn");
 
-// Fonctions utilitaires
+// handige functions
 function formatNumber(num) {
   return new Intl.NumberFormat().format(num);
 }
@@ -44,7 +44,7 @@ function animateValueChange(element) {
   }, 600);
 }
 
-// Fonctions API
+// API functies
 async function getPlayerById(playerId) {
   const response = await fetch(`${BASE_URL}/players`);
   const players = await response.json();
@@ -87,9 +87,9 @@ async function autoTick(playerId) {
   return response.json();
 }
 
-// Mise à jour de l'affichage du joueur
+// Update van de speler
 function updatePlayerDisplay(player, animate = false) {
-  // Vérifier les changements pour les animations
+  // check voor veranderingen
   if (currentPlayer && animate) {
     if (currentPlayer.money !== player.money) {
       animateValueChange(playerMoney);
@@ -99,36 +99,36 @@ function updatePlayerDisplay(player, animate = false) {
     }
   }
 
-  // Mettre à jour les valeurs
+  // update van de waardes
   playerMoney.textContent = formatNumber(player.money);
   playerResources.textContent = formatNumber(player.resources);
   playerWorkers.textContent = player.workers;
   playerSellers.textContent = player.sellers;
 
-  // Mettre à jour les montants de collecte et vente
+  // update van de verzamel- en verkoopbedragen
   const collectValue = player.workers > 0 ? player.workers : 1;
   collectAmount.textContent = collectValue;
   sellAmount.textContent = formatNumber(player.resources * 10);
 
-  // Mettre à jour les boutons
+  // update buttons
   updateButtonStates(player);
 
-  // Mettre à jour le statut d'automatisation
+  // update auto status
   updateAutoStatus(player);
 
   currentPlayer = player;
 }
 
 function updateButtonStates(player) {
-  // Bouton de vente - désactivé si pas de ressources
+  // verkoopknop - uitgeschakeld als er geen resources zijn
   sellBtn.disabled = player.resources === 0;
 
-  // Boutons de recrutement - désactivés si pas assez d'argent
+  // aanwervingsknop - uitgeschakeld als er niet genoeg geld is
   const canAffordWorker = player.money >= 200;
   hireWorkerBtn.disabled = !canAffordWorker;
   hireSellerBtn.disabled = !canAffordWorker;
 
-  // Changer le style des boutons désactivés
+  // verander de opaciteit van de knoppen
   if (!canAffordWorker) {
     hireWorkerBtn.style.opacity = "0.6";
     hireSellerBtn.style.opacity = "0.6";
@@ -144,7 +144,7 @@ function updateAutoStatus(player) {
   if (hasEmployees) {
     autoStatus.className = "auto-status";
     autoStatus.innerHTML = `
-            ✅ Automatisation active - Workers: ${player.workers}, Sellers: ${player.sellers}
+            ✅ Automatisatie Actief - Werkers: ${player.workers}, Verkopers: ${player.sellers}
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
@@ -156,7 +156,7 @@ function updateAutoStatus(player) {
   } else {
     autoStatus.className = "auto-status inactive";
     autoStatus.innerHTML = `
-            ⏸️ Automatisation inactive - Recrutez des employés pour commencer !
+            ⏸️ Automatisatie inactief 
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
@@ -168,7 +168,7 @@ function updateAutoStatus(player) {
   }
 }
 
-// Système d'auto-tick
+// autoTick functies
 function startAutoTick() {
   if (autoTickInterval) return;
 
@@ -181,17 +181,17 @@ function startAutoTick() {
       const updatedPlayer = await getPlayerById(currentPlayer._id);
       updatePlayerDisplay(updatedPlayer, true);
 
-      // Reset de la barre de progression
+      // Reset van de voortgang
       progress = 0;
       if (progressElement) {
         progressElement.style.width = "0%";
       }
     } catch (error) {
-      console.error("Erreur auto-tick:", error);
+      console.error("Error auto-tick:", error);
     }
   }, TICK_INTERVAL);
 
-  // Animation de la barre de progression
+  // animatie van de voortgangsbalk
   const progressInterval = setInterval(() => {
     progress += 100 / (TICK_INTERVAL / 50); // 50ms intervals
     if (progressElement) {
@@ -220,14 +220,14 @@ function stopAutoTick() {
   }
 }
 
-// Charger les données du joueur
+// Laad de spelergegevens bij het laden van de pagina
 async function loadPlayerData() {
   try {
     const updatedPlayer = await getPlayerById(currentPlayer._id);
     updatePlayerDisplay(updatedPlayer);
   } catch (error) {
-    console.error("Erreur lors du chargement:", error);
-    showStatusMessage("Erreur lors du chargement des données", "error");
+    console.error("Error tijdens het laden:", error);
+    showStatusMessage("Error tijdens het laden van de gegevens", "error");
   }
 }
 
@@ -243,10 +243,10 @@ collectBtn.addEventListener("click", async () => {
     collectBtn.disabled = true;
     await collectResources(currentPlayer._id);
     await loadPlayerData();
-    showStatusMessage("Ressources collectées !");
+    showStatusMessage("Grondstoffen verzameld !");
   } catch (error) {
     console.error("Erreur:", error);
-    showStatusMessage("Erreur lors de la collecte", "error");
+    showStatusMessage("Error tijdens het verzamellen", "error");
   } finally {
     collectBtn.disabled = false;
   }
@@ -254,7 +254,7 @@ collectBtn.addEventListener("click", async () => {
 
 sellBtn.addEventListener("click", async () => {
   if (currentPlayer.resources === 0) {
-    showStatusMessage("Aucune ressource à vendre !", "error");
+    showStatusMessage("Geen greondstoffen te verkopen!", "error");
     return;
   }
 
@@ -263,10 +263,12 @@ sellBtn.addEventListener("click", async () => {
     const soldAmount = currentPlayer.resources * 10;
     await sellResources(currentPlayer._id);
     await loadPlayerData();
-    showStatusMessage(`Ressources vendues pour ${formatNumber(soldAmount)}€ !`);
+    showStatusMessage(
+      `Grondstoffen verkocht voor ${formatNumber(soldAmount)}€ !`
+    );
   } catch (error) {
     console.error("Erreur:", error);
-    showStatusMessage("Erreur lors de la vente", "error");
+    showStatusMessage("Error tijdens het  verkopen", "error");
   } finally {
     sellBtn.disabled = false;
   }
@@ -274,7 +276,10 @@ sellBtn.addEventListener("click", async () => {
 
 hireWorkerBtn.addEventListener("click", async () => {
   if (currentPlayer.money < 200) {
-    showStatusMessage("Pas assez d'argent pour recruter un worker !", "error");
+    showStatusMessage(
+      "Geen geld genoeg om een een werknemer aan te nemen!",
+      "error"
+    );
     return;
   }
 
@@ -282,7 +287,7 @@ hireWorkerBtn.addEventListener("click", async () => {
     hireWorkerBtn.disabled = true;
     await hireWorker(currentPlayer._id, "collector");
     await loadPlayerData();
-    showStatusMessage("Worker recruté avec succès !");
+    showStatusMessage("Werker aangenomen!");
   } catch (error) {
     console.error("Erreur:", error);
     showStatusMessage(error.message, "error");
@@ -293,7 +298,10 @@ hireWorkerBtn.addEventListener("click", async () => {
 
 hireSellerBtn.addEventListener("click", async () => {
   if (currentPlayer.money < 200) {
-    showStatusMessage("Pas assez d'argent pour recruter un seller !", "error");
+    showStatusMessage(
+      "Geen geld genoeg om een een werknemer aan te nemen!",
+      "error"
+    );
     return;
   }
 
@@ -301,7 +309,7 @@ hireSellerBtn.addEventListener("click", async () => {
     hireSellerBtn.disabled = true;
     await hireWorker(currentPlayer._id, "seller");
     await loadPlayerData();
-    showStatusMessage("Seller recruté avec succès !");
+    showStatusMessage("Verkoper aangenomen!");
   } catch (error) {
     console.error("Erreur:", error);
     showStatusMessage(error.message, "error");
@@ -310,9 +318,9 @@ hireSellerBtn.addEventListener("click", async () => {
   }
 });
 
-// Raccourcis clavier
+// toetsenbord sneltoetsen
 document.addEventListener("keydown", (e) => {
-  if (e.ctrlKey || e.metaKey) return; // Éviter les conflits avec les raccourcis système
+  if (e.ctrlKey || e.metaKey) return; // vermijd conflicten avec Ctrl ou Cmd
 
   switch (e.key.toLowerCase()) {
     case "c":
@@ -332,7 +340,7 @@ document.addEventListener("keydown", (e) => {
 
 // Initialisation
 window.addEventListener("load", async () => {
-  // Vérifier si un joueur est connecté
+  // check of de spelergegevens zijn opgeslagen in sessionStorage
   const playerData = sessionStorage.getItem("currentPlayer");
   if (!playerData) {
     window.location.href = "../index.html";
@@ -343,26 +351,26 @@ window.addEventListener("load", async () => {
     currentPlayer = JSON.parse(playerData);
     userName.textContent = currentPlayer.username;
 
-    // Charger les données actuelles du joueur
+    // laad de spelergegevens
     await loadPlayerData();
 
-    // Démarrer l'auto-tick si le joueur a des employés
+    // Start de autoTick als er werkers of verkopers zijn
     if (currentPlayer.workers > 0 || currentPlayer.sellers > 0) {
       startAutoTick();
     }
   } catch (error) {
-    console.error("Erreur d'initialisation:", error);
+    console.error("Innitialisatie Error:", error);
     sessionStorage.removeItem("currentPlayer");
     window.location.href = "../index.html";
   }
 });
 
-// Nettoyage avant fermeture
+// kuis de autoTick bij het verlaten van de pagina
 window.addEventListener("beforeunload", () => {
   stopAutoTick();
 });
 
-// Actualisation automatique périodique (toutes les 30 secondes)
+// Laad de spelergegevens elke 30 seconden
 setInterval(async () => {
   if (currentPlayer && !autoTickInterval) {
     await loadPlayerData();

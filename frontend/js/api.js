@@ -1,6 +1,6 @@
 const BASE_URL = "http://localhost:3000/api";
 
-// Créer un nouveau joueur
+// maken van een nieuwe speler
 export async function createPlayer(username) {
   const response = await fetch(`${BASE_URL}/player`, {
     method: "POST",
@@ -10,36 +10,36 @@ export async function createPlayer(username) {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || "Erreur lors de la création du joueur");
+    throw new Error(error.error || "Error tijdens het aanmaken van de speler");
   }
 
   return await response.json();
 }
 
-// Obtenir la liste de tous les joueurs
+// verkrijg alle spelers
 export async function getPlayers() {
   const response = await fetch(`${BASE_URL}/players`);
 
   if (!response.ok) {
-    throw new Error("Erreur lors de la récupération des joueurs");
+    throw new Error("Error tijdens het ophalen van spelers");
   }
 
   return await response.json();
 }
 
-// Obtenir un joueur par ID
+// verkrijg een speler op basis van ID
 export async function getPlayerById(playerId) {
   const players = await getPlayers();
   const player = players.find((p) => p._id === playerId);
 
   if (!player) {
-    throw new Error("Joueur introuvable");
+    throw new Error("speler niet gevonden");
   }
 
   return player;
 }
 
-// Collecter des ressources
+// verzamel resources
 export async function collectResources(playerId) {
   const response = await fetch(`${BASE_URL}/player/${playerId}/collect`, {
     method: "PATCH",
@@ -47,13 +47,15 @@ export async function collectResources(playerId) {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || "Erreur lors de la collecte");
+    throw new Error(
+      error.error || "Error tijdens het verzamelen van resources"
+    );
   }
 
   return await response.json();
 }
 
-// Vendre des ressources
+// verkoop resources
 export async function sellResources(playerId) {
   const response = await fetch(`${BASE_URL}/player/${playerId}/sell`, {
     method: "PATCH",
@@ -61,13 +63,13 @@ export async function sellResources(playerId) {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || "Erreur lors de la vente");
+    throw new Error(error.error || "error tijdens verkoop");
   }
 
   return await response.json();
 }
 
-// Recruter un worker
+// een werker inhuren
 export async function hireWorker(playerId, type) {
   const response = await fetch(`${BASE_URL}/player/${playerId}/hire`, {
     method: "POST",
@@ -77,13 +79,13 @@ export async function hireWorker(playerId, type) {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || "Erreur lors du recrutement");
+    throw new Error(error.error || "Error bij het inhuren van een werker");
   }
 
   return response.json();
 }
 
-// Auto-tick pour automatisation
+// auto-tick voor het automatisch verzamelen van resources
 export async function autoTick(playerId) {
   const response = await fetch(`${BASE_URL}/player/${playerId}/auto-tick`, {
     method: "POST",
@@ -91,13 +93,13 @@ export async function autoTick(playerId) {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || "Erreur lors de l'auto-tick");
+    throw new Error(error.error || "Error tijdens auto-tick");
   }
 
   return response.json();
 }
 
-// Fonction utilitaire pour se connecter (trouver un joueur existant)
+// handige functies voor login
 export async function loginPlayer(username) {
   const players = await getPlayers();
   const player = players.find(
@@ -105,7 +107,7 @@ export async function loginPlayer(username) {
   );
 
   if (!player) {
-    throw new Error("Joueur non trouvé");
+    throw new Error("Speler niet gevonden");
   }
 
   return player;

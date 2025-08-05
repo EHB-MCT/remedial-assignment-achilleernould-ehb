@@ -1,13 +1,13 @@
 const BASE_URL = "http://localhost:3000/api";
 
-// Éléments DOM
+// DOM
 const loginForm = document.getElementById("loginForm");
 const usernameInput = document.getElementById("username");
 const loginBtn = document.getElementById("loginBtn");
 const loginText = document.getElementById("loginText");
 const statusMessage = document.getElementById("statusMessage");
 
-// Fonctions utilitaires
+// handige functies
 function showStatusMessage(message, type = "success") {
   statusMessage.innerHTML = `<div class="status-message status-${type}">${message}</div>`;
   setTimeout(() => {
@@ -20,7 +20,7 @@ function showLoading(show = true) {
     loginText.innerHTML = '<span class="loading"></span>Chargement...';
     loginBtn.disabled = true;
   } else {
-    loginText.innerHTML = "🚀 Commencer à jouer";
+    loginText.innerHTML = "🚀 Start met Spelen";
     loginBtn.disabled = false;
   }
 }
@@ -35,7 +35,7 @@ async function createPlayer(username) {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || "Erreur lors de la création du compte");
+    throw new Error(error.error || "Error tijdens het aanmaken van de speler");
   }
 
   return await response.json();
@@ -45,7 +45,7 @@ async function getPlayers() {
   const response = await fetch(`${BASE_URL}/players`);
 
   if (!response.ok) {
-    throw new Error("Erreur de connexion au serveur");
+    throw new Error("Error met de server, probeer het later opnieuw");
   }
 
   return await response.json();
@@ -53,7 +53,7 @@ async function getPlayers() {
 
 async function findOrCreatePlayer(username) {
   try {
-    // D'abord, essayer de trouver le joueur existant
+    // Eersr zoeken naar de speler
     const players = await getPlayers();
     const existingPlayer = players.find(
       (p) => p.username.toLowerCase() === username.toLowerCase()
@@ -62,7 +62,7 @@ async function findOrCreatePlayer(username) {
     if (existingPlayer) {
       return { player: existingPlayer, isNew: false };
     } else {
-      // Si le joueur n'existe pas, le créer
+      // als de speler niet bestaat, maak een nieuwe aan
       const newPlayer = await createPlayer(username);
       return { player: newPlayer, isNew: true };
     }
@@ -77,12 +77,12 @@ loginForm.addEventListener("submit", async (e) => {
 
   const username = usernameInput.value.trim();
   if (!username) {
-    showStatusMessage("Veuillez entrer un nom d'utilisateur", "error");
+    showStatusMessage("Geef een Naam in!", "error");
     return;
   }
 
   if (username.length < 2) {
-    showStatusMessage("Le nom doit contenir au moins 2 caractères", "error");
+    showStatusMessage("De naam moet minstens 2 letters bevatten", "error");
     return;
   }
 
@@ -95,17 +95,17 @@ loginForm.addEventListener("submit", async (e) => {
 
     if (isNew) {
       showStatusMessage(
-        `Nouveau compte créé ! Bienvenue ${player.username} !`,
+        `Nieuw account aangemaakt! WELKOM! ${player.username} !`,
         "success"
       );
     } else {
-      showStatusMessage(`Bon retour ${player.username} !`, "success");
+      showStatusMessage(`WELKOM TERUG! ${player.username} !`, "success");
     }
 
-    // Sauvegarder les infos du joueur
+    // sla de spelergegevens op in sessionStorage
     sessionStorage.setItem("currentPlayer", JSON.stringify(player));
 
-    // Redirection vers le jeu après un délai
+    // redirect naar de game pagina na 1.5 seconde
     setTimeout(() => {
       window.location.href = "pages/game.html";
     }, 1500);
@@ -117,19 +117,19 @@ loginForm.addEventListener("submit", async (e) => {
   }
 });
 
-// Vérifier si un joueur est déjà connecté
+// check of de speler al is ingelogd
 window.addEventListener("load", () => {
   const currentPlayer = sessionStorage.getItem("currentPlayer");
   if (currentPlayer) {
-    // Rediriger directement vers le jeu si déjà connecté
-    showStatusMessage("Redirection vers votre jeu...", "success");
+    //  als de speler al is ingelogd, redirect naar de game pagina
+    showStatusMessage("Loading", "success");
     setTimeout(() => {
       window.location.href = "pages/game.html";
     }, 1000);
   }
 });
 
-// Animation d'entrée
+// intro animatie
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector(".login-container");
   container.style.opacity = "0";
@@ -142,11 +142,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 100);
 });
 
-// Gestion des erreurs de réseau
+// network status
 window.addEventListener("online", () => {
-  showStatusMessage("Connexion rétablie !", "success");
+  showStatusMessage("Connectie terug gevonden!", "success");
 });
 
 window.addEventListener("offline", () => {
-  showStatusMessage("Connexion perdue. Vérifiez votre réseau.", "error");
+  showStatusMessage("Connectie Verloren", "error");
 });

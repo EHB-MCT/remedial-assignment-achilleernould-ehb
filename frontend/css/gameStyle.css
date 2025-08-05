@@ -209,6 +209,10 @@ body {
   font-weight: 500;
 }
 
+#statusMessage {
+  height: 50px;
+}
+
 .status-success {
   background-color: #c6f6d5;
   color: #22543d;

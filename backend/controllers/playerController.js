@@ -74,9 +74,9 @@ exports.hireWorker = async (req, res) => {
 };
 
 /**
- * autoTick pour automatisation
- * - Les workers récoltent 1 ressource chacun
- * - Les sellers vendent 1 ressource chacun (si dispo)
+ * autoTick voor automatische acties:
+ * - de spelers verzamelt automatisch resources op basis van hun aantal werkers
+ * - de spelers verkoopt automatisch resources op basis van hun aantal verkopers
  */
 exports.autoTick = async (req, res) => {
   try {
