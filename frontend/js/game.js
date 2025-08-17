@@ -162,12 +162,6 @@ async function getResourceInfo(playerId) {
   return response.json();
 }
 
-// Nieuwe functie om werknemerskosten op te halen
-async function getWorkerCosts(playerId) {
-  const response = await fetch(`${BASE_URL}/player/${playerId}/worker-costs`);
-  return response.json();
-}
-
 // Hoofdfunctie voor het bijwerken van spelerweergave
 function updatePlayerDisplay(player, animate = false) {
   // Controleer wijzigingen voor visuele animaties
@@ -180,17 +174,18 @@ function updatePlayerDisplay(player, animate = false) {
     }
   }
 
-  // Werk hoofdstatistieken bij
+  // FORCE UPDATE - werk altijd alle waarden bij
   playerMoney.textContent = formatNumber(player.money);
   playerResources.textContent = formatNumber(player.resources);
-  playerWorkers.textContent = player.workers;
-  playerSellers.textContent = player.sellers;
+  playerWorkers.textContent = player.workers || 0; // Force 0 als undefined
+  playerSellers.textContent = player.sellers || 0; // Force 0 als undefined
 
   // Werk resource icoon en label bij
   updateResourceDisplay(player);
 
   // Werk collectie en verkoop bedragen bij
-  const collectValue = player.workers > 0 ? player.workers : 1;
+  const collectValue =
+    player.workers && player.workers > 0 ? player.workers : 1;
   collectAmount.textContent = collectValue;
   sellAmount.textContent = formatNumber(
     player.resources * (player.resourceValue || 1)
@@ -333,7 +328,11 @@ function celebrateUpgrade(newResourceData) {
   celebration.innerHTML = `
         <div class="upgrade-text">
             🎉 UPGRADE! 🎉<br>
-            Nieuwe resource: ${newResourceData.name} ${newResourceData.emoji}
+            Nieuwe resource: ${newResourceData.name} ${newResourceData.emoji}<br>
+            <small style="color: #e74c3c; margin-top: 10px; display: block;">
+                ⚠️ Alle werknemers zijn ontslagen!<br>
+                Je moet opnieuw beginnen met aannemen.
+            </small>
         </div>
     `;
 
@@ -354,7 +353,9 @@ function celebrateUpgrade(newResourceData) {
             font-size: 1.5rem;
             font-weight: bold;
             color: #333;
-            animation: upgradePopIn 3s ease-out forwards;
+            animation: upgradePopIn 4s ease-out forwards;
+            max-width: 400px;
+            line-height: 1.4;
         }
         
         @keyframes upgradePopIn {
@@ -362,11 +363,11 @@ function celebrateUpgrade(newResourceData) {
                 opacity: 0;
                 transform: translate(-50%, -50%) scale(0.5);
             }
-            20% {
+            15% {
                 opacity: 1;
                 transform: translate(-50%, -50%) scale(1.1);
             }
-            80% {
+            85% {
                 opacity: 1;
                 transform: translate(-50%, -50%) scale(1);
             }
@@ -384,7 +385,7 @@ function celebrateUpgrade(newResourceData) {
   setTimeout(() => {
     celebration.remove();
     style.remove();
-  }, 3000);
+  }, 4000);
 }
 
 // Werknemerstatus bijwerken met visuele indicatoren
@@ -461,37 +462,44 @@ function updateTooltips(player) {
 }
 
 // Knopstatus bijwerken gebaseerd op spelerstatus
-async function updateButtonStates(player) {
+function updateButtonStates(player) {
   // Verkoop knop - uitgeschakeld als geen resources beschikbaar
   sellBtn.disabled = player.resources === 0;
 
-  try {
-    // Haal actuele werknemerskosten op
-    const workerCosts = await getWorkerCosts(player._id);
+  // Bereken basis werknemerskosten lokaal (simpele versie)
+  const calculateWorkerCost = (currentCount) => {
+    const baseCost = 200;
+    return Math.floor(baseCost * Math.pow(1.5, currentCount));
+  };
 
-    // Aanname knoppen - uitgeschakeld als onvoldoende geld voor actuele kosten
-    const canAffordWorker = player.money >= workerCosts.nextWorkerCost;
-    const canAffordSeller = player.money >= workerCosts.nextSellerCost;
+  const nextWorkerCost = calculateWorkerCost(player.workers || 0);
+  const nextSellerCost = calculateWorkerCost(player.sellers || 0);
 
-    hireWorkerBtn.disabled = !canAffordWorker;
-    hireSellerBtn.disabled = !canAffordSeller;
+  // Aanname knoppen - uitgeschakeld als onvoldoende geld voor actuele kosten
+  const canAffordWorker = player.money >= nextWorkerCost;
+  const canAffordSeller = player.money >= nextSellerCost;
 
-    // Pauzeer knoppen - uitgeschakeld als geen werknemers
-    pauseWorkersBtn.disabled = player.workers === 0;
-    pauseSellersBtn.disabled = player.sellers === 0;
+  hireWorkerBtn.disabled = !canAffordWorker;
+  hireSellerBtn.disabled = !canAffordSeller;
 
-    // Visuele feedback voor uitgeschakelde knoppen
-    hireWorkerBtn.style.opacity = canAffordWorker ? "1" : "0.6";
-    hireSellerBtn.style.opacity = canAffordSeller ? "1" : "0.6";
-  } catch (error) {
-    console.error("Fout bij bijwerken knopstatus:", error);
-    // Fallback naar standaard gedrag
-    const canAffordBasic = player.money >= 200;
-    hireWorkerBtn.disabled = !canAffordBasic;
-    hireSellerBtn.disabled = !canAffordBasic;
-    hireWorkerBtn.style.opacity = canAffordBasic ? "1" : "0.6";
-    hireSellerBtn.style.opacity = canAffordBasic ? "1" : "0.6";
-  }
+  // Update knop teksten met actuele kosten
+  hireWorkerBtn.innerHTML = `
+        <span>🧑‍🌾</span>
+        Huur Worker (€${formatNumber(nextWorkerCost)})
+    `;
+
+  hireSellerBtn.innerHTML = `
+        <span>🧑‍💼</span>
+        Huur Seller (€${formatNumber(nextSellerCost)})
+    `;
+
+  // Pauzeer knoppen - uitgeschakeld als geen werknemers
+  pauseWorkersBtn.disabled = (player.workers || 0) === 0;
+  pauseSellersBtn.disabled = (player.sellers || 0) === 0;
+
+  // Visuele feedback voor uitgeschakelde knoppen
+  hireWorkerBtn.style.opacity = canAffordWorker ? "1" : "0.6";
+  hireSellerBtn.style.opacity = canAffordSeller ? "1" : "0.6";
 }
 
 // Automatisatiestatus bijwerken
@@ -657,7 +665,7 @@ async function loadPlayerData() {
     const updatedPlayer = await getPlayerById(currentPlayer._id);
     updatePlayerDisplay(updatedPlayer);
     await loadResourceUpgradeInfo();
-    await loadWorkerCosts(); // Laad ook de werknemerskosten
+    // Werknemerskosten worden nu lokaal berekend in updateButtonStates
   } catch (error) {
     console.error("Fout bij laden spelergegevens:", error);
     showStatusMessage("Fout bij laden gegevens", "error");
@@ -707,19 +715,22 @@ sellBtn.addEventListener("click", async () => {
   }
 });
 
-// Event Listeners - Werknemer aanname met dynamische kosten
+// Event Listeners - Werknemer aanname avec vérification des coûts
 hireWorkerBtn.addEventListener("click", async () => {
   try {
     hireWorkerBtn.disabled = true;
 
-    // Haal actuele kosten op voordat we proberen aan te nemen
-    const workerCosts = await getWorkerCosts(currentPlayer._id);
+    // Calcul local du coût avant embauche
+    const calculateWorkerCost = (currentCount) => {
+      const baseCost = 200;
+      return Math.floor(baseCost * Math.pow(1.5, currentCount));
+    };
 
-    if (currentPlayer.money < workerCosts.nextWorkerCost) {
+    const workerCost = calculateWorkerCost(currentPlayer.workers || 0);
+
+    if (currentPlayer.money < workerCost) {
       showStatusMessage(
-        `Niet genoeg geld om een worker aan te nemen! Kosten: €${formatNumber(
-          workerCosts.nextWorkerCost
-        )}`,
+        `Niet genoeg geld! Kosten: €${formatNumber(workerCost)}`,
         "error"
       );
       return;
@@ -727,11 +738,7 @@ hireWorkerBtn.addEventListener("click", async () => {
 
     await hireWorker(currentPlayer._id, "collector");
     await loadPlayerData();
-    showStatusMessage(
-      `Worker succesvol aangenomen voor €${formatNumber(
-        workerCosts.nextWorkerCost
-      )}!`
-    );
+    showStatusMessage(`Worker aangenomen voor €${formatNumber(workerCost)}!`);
   } catch (error) {
     console.error("Fout:", error);
     showStatusMessage(error.message, "error");
@@ -744,14 +751,17 @@ hireSellerBtn.addEventListener("click", async () => {
   try {
     hireSellerBtn.disabled = true;
 
-    // Haal actuele kosten op voordat we proberen aan te nemen
-    const workerCosts = await getWorkerCosts(currentPlayer._id);
+    // Calcul local du coût avant embauche
+    const calculateWorkerCost = (currentCount) => {
+      const baseCost = 200;
+      return Math.floor(baseCost * Math.pow(1.5, currentCount));
+    };
 
-    if (currentPlayer.money < workerCosts.nextSellerCost) {
+    const sellerCost = calculateWorkerCost(currentPlayer.sellers || 0);
+
+    if (currentPlayer.money < sellerCost) {
       showStatusMessage(
-        `Niet genoeg geld om een seller aan te nemen! Kosten: €${formatNumber(
-          workerCosts.nextSellerCost
-        )}`,
+        `Niet genoeg geld! Kosten: €${formatNumber(sellerCost)}`,
         "error"
       );
       return;
@@ -759,11 +769,7 @@ hireSellerBtn.addEventListener("click", async () => {
 
     await hireWorker(currentPlayer._id, "seller");
     await loadPlayerData();
-    showStatusMessage(
-      `Seller succesvol aangenomen voor €${formatNumber(
-        workerCosts.nextSellerCost
-      )}!`
-    );
+    showStatusMessage(`Seller aangenomen voor €${formatNumber(sellerCost)}!`);
   } catch (error) {
     console.error("Fout:", error);
     showStatusMessage(error.message, "error");
@@ -806,7 +812,42 @@ if (upgradeBtn) {
   upgradeBtn.addEventListener("click", async () => {
     try {
       upgradeBtn.disabled = true;
+
+      console.log(
+        "VOOR UPGRADE - Workers:",
+        currentPlayer.workers,
+        "Sellers:",
+        currentPlayer.sellers
+      );
+
       const result = await upgradeResource(currentPlayer._id);
+
+      console.log("NA UPGRADE - Réponse serveur:", result.player);
+      console.log(
+        "Workers in antwoord:",
+        result.player.workers,
+        "Sellers:",
+        result.player.sellers
+      );
+
+      // verwerk de huidige spelergegevens
+      currentPlayer = result.player;
+
+      // Stop auto-tick onmiddelijk
+      if (autoTickInterval) {
+        stopAutoTick();
+      }
+
+      // verwerk de weergave van de speler
+      playerWorkers.textContent = result.player.workers || 0;
+      playerSellers.textContent = result.player.sellers || 0;
+
+      console.log(
+        "getoont - Workers:",
+        playerWorkers.textContent,
+        "Sellers:",
+        playerSellers.textContent
+      );
 
       // Celebreer de upgrade met visuele effecten
       const resourceTypes = {
@@ -820,10 +861,23 @@ if (upgradeBtn) {
       const newResourceData = resourceTypes[result.upgradeInfo.newLevel];
       celebrateUpgrade(newResourceData);
 
+      // refresh player data
       await loadPlayerData();
-      showStatusMessage(
-        `Geüpgraded naar ${result.upgradeInfo.newResource.name}! Nieuwe waarde: €${result.upgradeInfo.newValue}`
-      );
+
+      // Force re-update après le reload
+      updatePlayerDisplay(result.player, true);
+
+      // Toon upgrade bericht
+      let upgradeMessage = `Geüpgraded naar ${result.upgradeInfo.newResource.name}! Nieuwe waarde: €${result.upgradeInfo.newValue}`;
+
+      if (
+        result.upgradeInfo.workersReset > 0 ||
+        result.upgradeInfo.sellersReset > 0
+      ) {
+        upgradeMessage += `\n⚠️ Werknemers gereset: ${result.upgradeInfo.workersReset} Workers, ${result.upgradeInfo.sellersReset} Sellers`;
+      }
+
+      showStatusMessage(upgradeMessage);
     } catch (error) {
       console.error("Fout:", error);
       showStatusMessage(error.message, "error");

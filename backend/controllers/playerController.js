@@ -1,18 +1,28 @@
 const Player = require("../models/player");
 
-// Système d'upgrade des ressources
+// Systeem voor resource types
 const RESOURCE_TYPES = {
-  1: { name: "Steen", emoji: "🪨", upgradeCost: 5000 },
-  2: { name: "IJzer", emoji: "⛏️", upgradeCost: 25000 },
-  3: { name: "Goud", emoji: "🏆", upgradeCost: 100000 },
-  4: { name: "Diamant", emoji: "💎", upgradeCost: 500000 },
-  5: { name: "Platina", emoji: "⭐", upgradeCost: null }, // Niveau max
+  1: { name: "Steen", emoji: "🪨", baseValue: 1, upgradeCost: 10000 },
+  2: { name: "IJzer", emoji: "⛏️", baseValue: 10, upgradeCost: 100000 },
+  3: { name: "Goud", emoji: "🏆", baseValue: 100, upgradeCost: 1000000 },
+  4: { name: "Diamant", emoji: "💎", baseValue: 1000, upgradeCost: 10000000 },
+  5: { name: "Platina", emoji: "⭐", baseValue: 10000, upgradeCost: null },
 };
 
+// Functie om werknemerskosten te berekenen (DOIT ÊTRE GLOBALE)
+function calculateWorkerCost(currentCount) {
+  const baseCost = 200;
+  return Math.floor(baseCost * Math.pow(1.5, currentCount));
+}
+
+// Nieuwe speler aanmaken
 exports.createPlayer = async (req, res) => {
   try {
     const { username } = req.body;
-    const player = new Player({ username });
+    const player = new Player({
+      username,
+      resourceValue: RESOURCE_TYPES[1].baseValue,
+    });
     await player.save();
     res.json(player);
   } catch (error) {
@@ -20,6 +30,7 @@ exports.createPlayer = async (req, res) => {
   }
 };
 
+// Alle spelers ophalen
 exports.getPlayers = async (req, res) => {
   try {
     const players = await Player.find();
@@ -29,6 +40,7 @@ exports.getPlayers = async (req, res) => {
   }
 };
 
+// Resources verzamelen
 exports.collectResources = async (req, res) => {
   try {
     const player = await Player.findById(req.params.id);
@@ -45,6 +57,7 @@ exports.collectResources = async (req, res) => {
   }
 };
 
+// Resources verkopen
 exports.sellResources = async (req, res) => {
   try {
     const player = await Player.findById(req.params.id);
@@ -64,6 +77,7 @@ exports.sellResources = async (req, res) => {
   }
 };
 
+// Worker of seller aannemen (CORRIGÉ)
 exports.hireWorker = async (req, res) => {
   try {
     const { id } = req.params;
@@ -72,19 +86,40 @@ exports.hireWorker = async (req, res) => {
 
     if (!player) return res.status(404).json({ error: "Speler niet gevonden" });
 
-    const cost = 200;
-    if (player.money < cost)
-      return res.status(400).json({ error: "Niet genoeg geld" });
+    // Bereken kosten AVANT d'embaucher
+    let cost;
+    if (type === "collector") {
+      cost = calculateWorkerCost(player.workers); // Coût AVANT d'ajouter
+    } else if (type === "seller") {
+      cost = calculateWorkerCost(player.sellers); // Coût AVANT d'ajouter
+    } else {
+      return res.status(400).json({ error: "Ongeldig werknemer type" });
+    }
 
+    console.log(
+      `Tentative d'embauche ${type}: coût calculé = ${cost}, argent joueur = ${player.money}`
+    );
+
+    if (player.money < cost) {
+      return res.status(400).json({
+        error: `Niet genoeg geld! Kosten: €${cost.toLocaleString()}`,
+      });
+    }
+
+    // geld afhalen en werknemer toevoegen
     player.money -= cost;
 
     if (type === "collector") {
       player.workers += 1;
-    } else if (type === "seller") {
-      player.sellers += 1;
     } else {
-      return res.status(400).json({ error: "Ongeldig werker type" });
+      player.sellers += 1;
     }
+
+    console.log(
+      `Embauche réussie: nouveau nombre de ${type}s = ${
+        type === "collector" ? player.workers : player.sellers
+      }`
+    );
 
     await player.save();
     res.json(player);
@@ -93,6 +128,7 @@ exports.hireWorker = async (req, res) => {
   }
 };
 
+// Auto-tick
 exports.autoTick = async (req, res) => {
   try {
     const player = await Player.findById(req.params.id);
@@ -101,14 +137,12 @@ exports.autoTick = async (req, res) => {
     let collected = 0;
     let sold = 0;
 
-    // Collecte automatique (si pas en pause)
     if (!player.workersPaused && player.workers > 0) {
       collected = player.workers;
       player.resources += collected;
       player.totalResourcesCollected += collected;
     }
 
-    // Vente automatique (si pas en pause)
     if (!player.sellersPaused && player.sellers > 0) {
       for (let i = 0; i < player.sellers; i++) {
         if (player.resources > 0) {
@@ -133,7 +167,7 @@ exports.autoTick = async (req, res) => {
   }
 };
 
-// Nouvelle fonction : Pause/Resume workers
+// Pause workers
 exports.toggleWorkersPause = async (req, res) => {
   try {
     const player = await Player.findById(req.params.id);
@@ -151,7 +185,7 @@ exports.toggleWorkersPause = async (req, res) => {
   }
 };
 
-// Nouvelle fonction : Pause/Resume sellers
+// Pause sellers
 exports.toggleSellersPause = async (req, res) => {
   try {
     const player = await Player.findById(req.params.id);
@@ -169,7 +203,7 @@ exports.toggleSellersPause = async (req, res) => {
   }
 };
 
-// Nouvelle fonction : Upgrade des ressources
+// UPGRADE RESOURCE
 exports.upgradeResource = async (req, res) => {
   try {
     const player = await Player.findById(req.params.id);
@@ -178,7 +212,6 @@ exports.upgradeResource = async (req, res) => {
     const currentLevel = player.resourceLevel;
     const nextLevel = currentLevel + 1;
 
-    // Vérifier si un upgrade est possible
     if (nextLevel > 5) {
       return res.status(400).json({ error: "Maximum niveau bereikt!" });
     }
@@ -191,15 +224,37 @@ exports.upgradeResource = async (req, res) => {
       });
     }
 
-    // Effectuer l'upgrade
+    // save previous state for reset
+    const previousWorkers = player.workers;
+    const previousSellers = player.sellers;
+
+    console.log(
+      `UPGRADE: Avant reset - Workers: ${previousWorkers}, Sellers: ${previousSellers}`
+    );
+
+    // upgrade uitvoeren
     player.money -= upgradeCost;
     player.resourceLevel = nextLevel;
-    player.resourceValue = nextLevel * 10; // Nouvelle valeur : niveau * 10
+    player.resourceValue = RESOURCE_TYPES[nextLevel].baseValue;
     player.totalUpgrades += 1;
+
+    // reset workers en sellers
+    player.workers = 0;
+    player.sellers = 0;
+    player.workersPaused = false;
+    player.sellersPaused = false;
+
+    console.log(
+      `UPGRADE: Après reset - Workers: ${player.workers}, Sellers: ${player.sellers}`
+    );
 
     await player.save();
 
     const newResourceType = RESOURCE_TYPES[nextLevel];
+
+    console.log(
+      `UPGRADE: Sauvegardé avec succès - Workers: ${player.workers}, Sellers: ${player.sellers}`
+    );
 
     res.json({
       player,
@@ -208,6 +263,8 @@ exports.upgradeResource = async (req, res) => {
         newResource: newResourceType,
         newValue: player.resourceValue,
         costPaid: upgradeCost,
+        workersReset: previousWorkers,
+        sellersReset: previousSellers,
       },
     });
   } catch (error) {
@@ -215,7 +272,7 @@ exports.upgradeResource = async (req, res) => {
   }
 };
 
-// Nouvelle fonction : Obtenir les infos des ressources
+// Resource info
 exports.getResourceInfo = async (req, res) => {
   try {
     const player = await Player.findById(req.params.id);
@@ -234,7 +291,7 @@ exports.getResourceInfo = async (req, res) => {
         ? {
             ...nextResource,
             level: player.resourceLevel + 1,
-            value: (player.resourceLevel + 1) * 10,
+            value: nextResource.baseValue,
           }
         : null,
       canUpgrade: nextResource && player.money >= currentResource.upgradeCost,
@@ -243,32 +300,6 @@ exports.getResourceInfo = async (req, res) => {
         totalEarned: player.totalMoneySaved,
         totalUpgrades: player.totalUpgrades,
       },
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Fonction pour obtenir les coûts des prochains workers
-exports.getWorkerCosts = async (req, res) => {
-  try {
-    const player = await Player.findById(req.params.id);
-    if (!player) return res.status(404).json({ error: "Speler niet gevonden" });
-
-    // Fonction pour calculer les coûts (assurez-vous qu'elle existe dans votre fichier)
-    const calculateWorkerCost = (currentCount) => {
-      const baseCost = 200;
-      return Math.floor(baseCost * Math.pow(1.5, currentCount));
-    };
-
-    const nextWorkerCost = calculateWorkerCost(player.workers);
-    const nextSellerCost = calculateWorkerCost(player.sellers);
-
-    res.json({
-      nextWorkerCost,
-      nextSellerCost,
-      canAffordWorker: player.money >= nextWorkerCost,
-      canAffordSeller: player.money >= nextSellerCost,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

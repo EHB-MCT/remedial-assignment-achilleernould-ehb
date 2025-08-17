@@ -2,9 +2,6 @@ const express = require("express");
 const router = express.Router();
 const playerController = require("../controllers/playerController");
 
-// Debug: Vérifier quelles fonctions sont exportées (supprimez cette ligne après debug)
-console.log("Exported functions:", Object.keys(playerController));
-
 // Basis speler routes
 router.post("/player", playerController.createPlayer); // Nieuwe speler aanmaken
 router.get("/players", playerController.getPlayers); // Alle spelers ophalen
@@ -20,6 +17,5 @@ router.patch("/player/:id/toggle-workers", playerController.toggleWorkersPause);
 router.patch("/player/:id/toggle-sellers", playerController.toggleSellersPause); // Sellers pauzeren/hervatten
 router.post("/player/:id/upgrade-resource", playerController.upgradeResource); // Resource niveau upgraden
 router.get("/player/:id/resource-info", playerController.getResourceInfo); // Resource informatie ophalen
-router.get("/player/:id/worker-costs", playerController.getWorkerCosts); // Werknemerskosten ophalen
 
 module.exports = router;
