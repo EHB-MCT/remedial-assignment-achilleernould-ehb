@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/gameStyle.css" />
   </head>
   <body>
+    <!-- Hoofdheader met navigatie -->
     <header class="header">
       <div class="header-content">
         <div class="logo">💰 Economy Simulator</div>
@@ -18,7 +19,7 @@
     </header>
 
     <div class="container">
-      <!-- Dashboard van de speler -->
+      <!-- Speler dashboard sectie -->
       <div class="player-dashboard">
         <h2 class="dashboard-title">📊 Jouw Imperium</h2>
 
@@ -28,25 +29,58 @@
             <div class="stat-value" id="playerMoney">0</div>
             <div class="stat-label">Geld</div>
           </div>
-          <div class="stat-card">
-            <span class="stat-icon">🪨</span>
+          <div class="stat-card" id="resourceCard">
+            <span class="stat-icon" id="resourceIcon">🪨</span>
             <div class="stat-value" id="playerResources">0</div>
-            <div class="stat-label">Grondstoffen</div>
+            <div class="stat-label" id="resourceLabel">Steen</div>
           </div>
-          <div class="stat-card">
+          <div class="stat-card worker-card">
             <span class="stat-icon">🧑‍🌾</span>
             <div class="stat-value" id="playerWorkers">0</div>
-            <div class="stat-label">Werkers</div>
+            <div class="stat-label">
+              Workers <span id="workerStatus"></span>
+            </div>
+            <div class="tooltip" id="workerTooltip">
+              <div class="tooltip-content">
+                <div class="tooltip-title">Workers Statistieken</div>
+                <div class="tooltip-stat">
+                  Productie per tick: <span id="workerProductionRate">0</span>
+                </div>
+                <div class="tooltip-stat">
+                  Totaal verzameld: <span id="totalCollected">0</span>
+                </div>
+                <div class="tooltip-stat">
+                  Status: <span id="workerTooltipStatus">Actief</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="stat-card">
+          <div class="stat-card seller-card">
             <span class="stat-icon">🧑‍💼</span>
             <div class="stat-value" id="playerSellers">0</div>
-            <div class="stat-label">Verkopers</div>
+            <div class="stat-label">
+              Sellers <span id="sellerStatus"></span>
+            </div>
+            <div class="tooltip" id="sellerTooltip">
+              <div class="tooltip-content">
+                <div class="tooltip-title">Sellers Statistieken</div>
+                <div class="tooltip-stat">
+                  Verkoop per tick: <span id="sellerSaleRate">0</span>
+                </div>
+                <div class="tooltip-stat">
+                  Totaal verdiend: €<span id="totalEarned">0</span>
+                </div>
+                <div class="tooltip-stat">
+                  Status: <span id="sellerTooltipStatus">Actief</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
+        <!-- Automatisatie status weergave -->
         <div id="autoStatus" class="auto-status inactive">
-          ⏸️ Automatisering inactief - Werf personeel aan om te beginnen!
+          ⏸️ Automatisering inactief - Huur werknemers om te beginnen!
           <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
           </div>
@@ -54,37 +88,77 @@
         <div id="statusMessage"></div>
       </div>
 
-      <!-- manuele acties -->
+      <!-- Handmatige acties sectie -->
       <div class="game-section">
-        <h2 class="section-title">⚡ Snelle Actie</h2>
+        <h2 class="section-title">⚡ Snelle Acties</h2>
         <div class="action-buttons">
           <button id="collectBtn" class="btn btn-success">
             <span>⛏️</span>
-            Grondstoffen verzamelen (+<span id="collectAmount">1</span>)
+            Verzamel Resources (+<span id="collectAmount">1</span>)
           </button>
           <button id="sellBtn" class="btn btn-warning">
             <span>💰</span>
-            Alles verkopen (+<span id="sellAmount">0</span>€)
+            Verkoop Alles (+€<span id="sellAmount">0</span>)
           </button>
         </div>
       </div>
 
-      <!-- Werving -->
+      <!-- Werknemers beheer sectie -->
       <div class="game-section">
-        <h2 class="section-title">👷 Werving</h2>
+        <h2 class="section-title">👷 Werknemers Beheer</h2>
         <div class="action-buttons">
           <button id="hireWorkerBtn" class="btn btn-primary">
             <span>🧑‍🌾</span>
-            Werker aanwerven (200€)
+            Huur Worker (€200)
           </button>
           <button id="hireSellerBtn" class="btn btn-primary">
             <span>🧑‍💼</span>
-            Verkoper aanwerven (200€)
+            Huur Seller (€200)
           </button>
+          <button id="pauseWorkersBtn" class="btn btn-secondary">
+            <span id="pauseWorkersIcon">⏸️</span>
+            <span id="pauseWorkersText">Pauzeer Workers</span>
+          </button>
+          <button id="pauseSellersBtn" class="btn btn-secondary">
+            <span id="pauseSellersIcon">⏸️</span>
+            <span id="pauseSellersText">Pauzeer Sellers</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Resource upgrade sectie -->
+      <div class="game-section">
+        <h2 class="section-title">🚀 Resource Upgrades</h2>
+        <div class="upgrade-info" id="upgradeInfo">
+          <div class="current-resource">
+            <h3>Huidige Resource:</h3>
+            <div class="resource-display">
+              <span class="resource-emoji" id="currentResourceEmoji">🪨</span>
+              <span class="resource-name" id="currentResourceName">Steen</span>
+              <span class="resource-value"
+                >€<span id="currentResourceValue">10</span> per stuk</span
+              >
+            </div>
+          </div>
+          <div class="next-resource" id="nextResourceDiv">
+            <h3>Volgende Resource:</h3>
+            <div class="resource-display">
+              <span class="resource-emoji" id="nextResourceEmoji">⛏️</span>
+              <span class="resource-name" id="nextResourceName">IJzer</span>
+              <span class="resource-value"
+                >€<span id="nextResourceValue">20</span> per stuk</span
+              >
+            </div>
+            <button id="upgradeBtn" class="btn btn-upgrade">
+              <span>🚀</span>
+              Upgrade voor €<span id="upgradeCost">5000</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- JavaScript bestand laden -->
     <script src="../js/game.js"></script>
   </body>
 </html>

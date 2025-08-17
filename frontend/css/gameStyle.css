@@ -1,3 +1,4 @@
+/* Reset en basis stijlen */
 * {
   margin: 0;
   padding: 0;
@@ -6,12 +7,287 @@
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #333;
   line-height: 1.6;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  transition: background 2s ease-in-out;
+  position: relative;
+  overflow-x: hidden;
 }
 
+/* Fonds dynamiques selon le niveau de ressource */
+body.resource-level-1 {
+  /* Steen (Pierre) - Gris foncé avec texture pierre */
+  background: radial-gradient(
+      circle at 20% 80%,
+      rgba(100, 100, 100, 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(120, 120, 120, 0.3) 0%,
+      transparent 50%
+    ),
+    linear-gradient(135deg, #4a4a4a 0%, #2d2d2d 50%, #1a1a1a 100%);
+}
+
+body.resource-level-2 {
+  /* IJzer (Fer) - Gris métallique avec reflets */
+  background: radial-gradient(
+      circle at 30% 70%,
+      rgba(169, 169, 169, 0.4) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 70% 30%,
+      rgba(192, 192, 192, 0.3) 0%,
+      transparent 50%
+    ),
+    linear-gradient(135deg, #708090 0%, #556b2f 30%, #2f4f4f 70%, #1c1c1c 100%);
+}
+
+body.resource-level-3 {
+  /* Goud (Or) - Doré avec reflets dorés animés */
+  background: radial-gradient(
+      circle at 25% 75%,
+      rgba(255, 215, 0, 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 75% 25%,
+      rgba(255, 223, 0, 0.2) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      #b8860b 0%,
+      #daa520 30%,
+      #ffd700 50%,
+      #ffa500 70%,
+      #8b7500 100%
+    );
+}
+
+body.resource-level-4 {
+  /* Diamant - Bleu cristallin avec reflets diamant */
+  background: radial-gradient(
+      circle at 40% 60%,
+      rgba(185, 242, 255, 0.4) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 60% 40%,
+      rgba(224, 255, 255, 0.3) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      #4169e1 0%,
+      #00bfff 30%,
+      #87ceeb 50%,
+      #b0e0e6 70%,
+      #191970 100%
+    );
+}
+
+body.resource-level-5 {
+  /* Platina - Argent platine avec reflets premium */
+  background: radial-gradient(
+      circle at 50% 50%,
+      rgba(229, 228, 226, 0.4) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(255, 255, 255, 0.3) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      #e5e4e2 0%,
+      #c0c0c0 20%,
+      #a8a8a8 40%,
+      #696969 60%,
+      #2f2f2f 100%
+    );
+}
+
+/* Animation de reflets qui bougent */
+body::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 35%,
+    rgba(255, 255, 255, 0.2) 40%,
+    rgba(255, 255, 255, 0.1) 45%,
+    transparent 50%
+  );
+  animation: shimmer 8s infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+/* Reflets spéciaux pour l'or */
+body.resource-level-3::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(255, 215, 0, 0.1) 50%,
+    rgba(255, 223, 0, 0.05) 60%,
+    transparent 70%
+  );
+  animation: goldPulse 4s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes goldPulse {
+  from {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* Reflets cristallins pour le diamant */
+body.resource-level-4::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+      circle at 25% 25%,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 75% 75%,
+      rgba(135, 206, 235, 0.3) 0%,
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(176, 224, 230, 0.1) 0%,
+      transparent 40%
+    );
+  animation: diamondSparkle 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes diamondSparkle {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: rotate(0deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: rotate(5deg);
+  }
+}
+
+/* Transitions douces pour les changements de niveau */
+body {
+  transition: all 3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Effet de particules flottantes selon le niveau */
+.floating-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: float 6s infinite ease-in-out;
+}
+
+.particle.stone {
+  background: rgba(105, 105, 105, 0.3);
+  width: 4px;
+  height: 4px;
+}
+
+.particle.iron {
+  background: rgba(169, 169, 169, 0.4);
+  width: 3px;
+  height: 3px;
+}
+
+.particle.gold {
+  background: rgba(255, 215, 0, 0.5);
+  width: 5px;
+  height: 5px;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.particle.diamond {
+  background: rgba(185, 242, 255, 0.6);
+  width: 6px;
+  height: 6px;
+  box-shadow: 0 0 15px rgba(185, 242, 255, 0.4);
+}
+
+.particle.platinum {
+  background: rgba(229, 228, 226, 0.7);
+  width: 4px;
+  height: 4px;
+  box-shadow: 0 0 12px rgba(229, 228, 226, 0.5);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(100vh) translateX(0px);
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-10vh) translateX(20px);
+  }
+}
+
+/* Header stijlen */
 .header {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -60,6 +336,7 @@ body {
   transform: translateY(-1px);
 }
 
+/* Container stijlen */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -85,6 +362,7 @@ body {
   gap: 10px;
 }
 
+/* Statistieken grid */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -126,6 +404,7 @@ body {
   letter-spacing: 0.5px;
 }
 
+/* Spel secties */
 .game-section {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
@@ -145,12 +424,14 @@ body {
   gap: 10px;
 }
 
+/* Actie knoppen grid */
 .action-buttons {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 15px;
 }
 
+/* Knop stijlen */
 .btn {
   padding: 15px 20px;
   border: none;
@@ -201,16 +482,18 @@ body {
   transform: none !important;
 }
 
+/* Status berichten */
+
+#statusMessage {
+  height: 50px;
+}
+
 .status-message {
   text-align: center;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 20px;
   font-weight: 500;
-}
-
-#statusMessage {
-  height: 50px;
 }
 
 .status-success {
@@ -225,6 +508,7 @@ body {
   border: 1px solid #fc8181;
 }
 
+/* Waarde wijziging animaties */
 .stat-change {
   animation: valueChange 0.6s ease-out;
 }
@@ -243,6 +527,7 @@ body {
   }
 }
 
+/* Automatisatie status */
 .auto-status {
   background: rgba(72, 187, 120, 0.1);
   border: 1px solid rgba(72, 187, 120, 0.3);
@@ -276,6 +561,180 @@ body {
   transition: width 0.3s ease;
 }
 
+/* Klikbare kaarten (workers/sellers) */
+.worker-card,
+.seller-card {
+  position: relative;
+  cursor: help;
+  transition: all 0.3s ease;
+}
+
+.worker-card:hover,
+.seller-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Tooltip stijlen */
+.tooltip {
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+}
+
+.stat-card:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tooltip-content {
+  text-align: left;
+  line-height: 1.4;
+}
+
+.tooltip-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #ffd700;
+}
+
+.tooltip-stat {
+  margin-bottom: 3px;
+}
+
+/* Secundaire knop stijlen */
+.btn-secondary {
+  background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(113, 128, 150, 0.4);
+}
+
+.btn-secondary.paused {
+  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+/* Upgrade sectie stijlen */
+.upgrade-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.current-resource,
+.next-resource {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+}
+
+.next-resource {
+  border: 2px solid #667eea;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.05) 0%,
+    rgba(118, 75, 162, 0.05) 100%
+  );
+}
+
+.resource-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.resource-emoji {
+  font-size: 2rem;
+}
+
+.resource-name {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #2d3748;
+}
+
+.resource-value {
+  color: #48bb78;
+  font-weight: 600;
+}
+
+.btn-upgrade {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.btn-upgrade:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+}
+
+.btn-upgrade:disabled {
+  background: #cbd5e0;
+  color: #718096;
+}
+
+/* Werknemers kosten info stijlen */
+.worker-cost-info {
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.worker-cost-info p {
+  margin: 5px 0;
+  color: #4a5568;
+}
+
+/* Status indicatoren */
+.status-indicator {
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+
+.status-active {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.status-paused {
+  background: #fed7d7;
+  color: #742a2a;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .header-content {
@@ -292,6 +751,10 @@ body {
   }
 
   .action-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .upgrade-info {
     grid-template-columns: 1fr;
   }
 }
