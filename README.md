@@ -538,6 +538,4 @@ Dit project is gelicenseerd onder de MIT License - zie het [LICENSE](LICENSE) be
 
 **Gemaakt door Achille Ernould**
 
-[🌟 Star deze repo](https://github.com/jouw-username/economy-simulator) • [🐛 Report Bug](https://github.com/jouw-username/economy-simulator/issues) • [💡 Request Feature](https://github.com/jouw-username/economy-simulator/issues)
-
 </div>
